@@ -1,0 +1,3 @@
+[submodule "argo-cd"]
+	path = argo-cd
+	url = git@github.com:argoproj/argo-helm.git
