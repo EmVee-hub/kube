@@ -1,2 +1,3 @@
 Conversation log started
 - k8s cluster managed via minikube
+- App configs stored in kube-apps directory
