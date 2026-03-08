@@ -1,3 +1,6 @@
 [submodule "argo-cd"]
 	path = argo-cd
 	url = git@github.com:argoproj/argo-helm.git
+[submodule "kube-apps"]
+	path = kube-apps
+	url = git@github.com:EmVee-hub/kube-apps.git

@@ -1,0 +1,2 @@
+Conversation log started
+- k8s cluster managed via minikube
