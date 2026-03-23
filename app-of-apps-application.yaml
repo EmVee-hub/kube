@@ -6,9 +6,9 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/EmVee-hub/app-of-apps.git
+    repoURL: https://github.com/EmVee-hub/kube.git
     targetRevision: HEAD
-    path: .
+    path: argocd
   destination:
     server: https://kubernetes.default.svc
     namespace: argocd
