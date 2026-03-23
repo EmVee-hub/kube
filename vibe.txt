@@ -1,3 +1,20 @@
 Conversation log started
 - k8s cluster managed via minikube
 - App configs stored in kube-apps directory
+- hello-page application created and pushed to kube-apps repo
+- dev application (app-of-apps) created pointing to https://github.com/EmVee-hub/app-of-apps.git
+- hello-page application added to dev environment via app-of-apps
+- Added hello-world-2, hello-world-3, and hello-world-4 applications
+- All 4 hello-world applications are Synced and Healthy
+- nginx-ingress application installed via kube-apps repo
+- ArgoCD dev application is Synced and Healthy
+- All hello-world pods are Running
+- Official nginx-ingress controller installed (v1.14.3) via kube-apps
+- Services and ingresses created for all applications
+- All ingresses have addresses and are ready
+- All changes pushed to main branch
+- Accessible at:
+  - hello-page.local
+  - hello-world-2.local
+  - hello-world-3.local
+  - hello-world-4.local
