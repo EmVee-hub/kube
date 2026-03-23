@@ -1,4 +1,4 @@
 Goal: ArgoCD template check workflow   
 TODO:
     - Install argocd
-    - 
+    - Can this be setup via terraform? (low prior)  
