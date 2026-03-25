@@ -668,6 +668,8 @@ configs:
     app-of-apps:
       url: https://github.com/EmVee-hub/kube.git 
       name: app-of-apps
+      path: "."
+      namespace: "argocd"
 
 
   # -- Annotations to be added to `configs.repositories` Secret

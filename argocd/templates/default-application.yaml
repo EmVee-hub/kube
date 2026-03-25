@@ -1,0 +1,22 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: default-app
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: {{ (index .Values.configs.repositories "app-of-apps").url | default "https://github.com/EmVee-hub/kube.git" }}
+    targetRevision: HEAD
+    path: {{ (index .Values.configs.repositories "app-of-apps").path | default "." }}
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: {{ (index .Values.configs.repositories "app-of-apps").namespace | default "default" }}
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
