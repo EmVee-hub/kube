@@ -668,10 +668,11 @@ configs:
     app-of-apps:
       url: https://github.com/EmVee-hub/app-of-apps.git 
       name: app-of-apps
+      type: git
     main-apps:
       url: https://github.com/EmVee-hub/kube-apps.git
       name: kube-apps
-
+      type: git
 
   # -- Annotations to be added to `configs.repositories` Secret
   repositoriesAnnotations: {}
