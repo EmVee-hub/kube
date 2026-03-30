@@ -232,7 +232,11 @@ configs:
     #         - name: your-github-org
 
     # OIDC configuration as an alternative to dex (optional).
-    # oidc.config: |
+    oidc.config: 
+      name: AzurAD
+      issuer: https://login.microsoftonline.com/e2108830-999b-4a0a-adcb-f83573c3d6b4/v2.0
+      clientID: 4e94d2d2-1918-4bea-8307-f8dc922290e6
+      clientSecret: TODO
     #   name: AzureAD
     #   issuer: https://login.microsoftonline.com/TENANT_ID/v2.0
     #   clientID: aaaabbbbccccddddeee
