@@ -671,6 +671,10 @@ argo-cd:
         url: https://github.com/EmVee-hub/kube-apps.git
         name: kube-apps
         type: git
+      kube:
+        url: https://github.com/EmVee-hub/kube.git
+        name: kube
+        type: git
       # private-helm-repo:
       #   url: https://my-private-chart-repo.internal
       #   name: private-repo
