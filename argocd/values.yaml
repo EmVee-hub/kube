@@ -8,7 +8,7 @@ nameOverride: argocd
 fullnameOverride: ""
 # -- Override the namespace
 # @default -- `.Release.Namespace`
-namespaceOverride: "argocd"
+namespaceOverride: ""
 # -- Override the Kubernetes version, which is used to evaluate certain manifests
 kubeVersionOverride: ""
 # Override APIVersions
@@ -34,7 +34,8 @@ crds:
   # -- Keep CRDs on chart uninstall
   keep: true
   # -- Annotations to be added to all CRDs
-  annotations: {}
+  annotations:
+    argocd.argoproj.io/sync-options: ServerSideApply=true
   # -- Additional labels to be added to all CRDs
   additionalLabels: {}
 
@@ -75,6 +76,9 @@ global:
 
   # -- Annotations for the all deployed Statefulsets
   statefulsetAnnotations: {}
+
+  # -- Labels for the all deployed Statefulsets
+  statefulsetLabels: {}
 
   # -- Annotations for the all deployed Deployments
   deploymentAnnotations: {}
@@ -182,6 +186,29 @@ global:
   # -- Annotations for the all deployed Certificates
   certificateAnnotations: {}
 
+## Argo CD subchart configuration
+argo-cd:
+  configs:
+    # -- Repositories list to be used by applications
+    ## Creates a secret for each key/value specified below to create repositories
+    ## Note: the last example in the list would use a repository credential template, configured under "configs.credentialTemplates".
+    repositories:
+      istio-helm-repo:
+        url: https://storage.googleapis.com/istio-prerelease/daily-build/master-latest-daily/charts
+        name: istio.io
+        type: helm
+    # private-helm-repo:
+    #   url: https://my-private-chart-repo.internal
+    #   name: private-repo
+    #   type: helm
+    #   password: my-password
+    #   username: my-username
+    # private-repo:
+    #   url: https://github.com/argoproj/private-repo
+
+    # -- Annotations to be added to `configs.repositories` Secret
+    repositoriesAnnotations: {}
+
 ## Argo Configs
 configs:
   # General Argo CD configuration. Any values you put under `.configs.cm` are passed to argocd-cm ConfigMap.
@@ -209,7 +236,10 @@ configs:
     admin.enabled: true
 
     # -- Timeout to discover if a new manifests version got published to the repository
-    timeout.reconciliation: 180s
+    timeout.reconciliation: 120s
+
+    # -- Maximum jitter added to the reconciliation timeout to spread out refreshes and reduce repo-server load
+    timeout.reconciliation.jitter: 60s
 
     # -- Timeout to refresh application data as well as target manifests cache
     timeout.hard.reconciliation: 0s
@@ -232,11 +262,7 @@ configs:
     #         - name: your-github-org
 
     # OIDC configuration as an alternative to dex (optional).
-    oidc.config: 
-      name: AzurAD
-      issuer: https://login.microsoftonline.com/e2108830-999b-4a0a-adcb-f83573c3d6b4/v2.0
-      clientID: 4e94d2d2-1918-4bea-8307-f8dc922290e6
-      clientSecret: TODO
+    # oidc.config: |
     #   name: AzureAD
     #   issuer: https://login.microsoftonline.com/TENANT_ID/v2.0
     #   clientID: aaaabbbbccccddddeee
@@ -542,7 +568,7 @@ configs:
   # Ref: https://argo-cd.readthedocs.io/en/stable/operator-manual/config-management-plugins/
   cmp:
     # -- Create the argocd-cmp-cm configmap
-    create: true
+    create: false
 
     # -- Annotations to be added to argocd-cmp-cm configmap
     annotations: {}
@@ -655,32 +681,6 @@ configs:
   # -- Annotations to be added to `configs.credentialTemplates` Secret
   credentialTemplatesAnnotations: {}
 
-  # -- Repositories list to be used by applications
-  ## Creates a secret for each key/value specified below to create repositories
-  ## Note: the last example in the list would use a repository credential template, configured under "configs.credentialTemplates".
-  repositories: 
-    # istio-helm-repo:
-    #   url: https://storage.googleapis.com/istio-prerelease/daily-build/master-latest-daily/charts
-    #   name: istio.io
-    #   type: helm
-    # private-helm-repo:
-    #   url: https://my-private-chart-repo.internal
-    #   name: private-repo
-    #   type: helm
-    #   password: my-password
-    #   username: my-username
-    app-of-apps:
-      url: https://github.com/EmVee-hub/app-of-apps.git 
-      name: app-of-apps
-      type: git
-    main-apps:
-      url: https://github.com/EmVee-hub/kube-apps.git
-      name: kube-apps
-      type: git
-
-  # -- Annotations to be added to `configs.repositories` Secret
-  repositoriesAnnotations: {}
-
   # Argo CD sensitive data
   # Ref: https://argo-cd.readthedocs.io/en/stable/operator-manual/user-management/#sensitive-data-and-sso-client-secrets
   secret:
@@ -726,6 +726,12 @@ configs:
 
   # -- Define custom [CSS styles] for your argo instance.
   # This setting will automatically mount the provided CSS and reference it in the argo configuration.
+
+  # -- Repositories list to be used by applications
+  ## Creates a secret for each key/value specified below to create repositories
+  ## Note: the last example in the list would use a repository credential template, configured under "configs.credentialTemplates".
+  repositories: {}
+
   # @default -- `""` (See [values.yaml])
   ## Ref: https://argo-cd.readthedocs.io/en/stable/operator-manual/custom-styles/
   styles: ""
@@ -905,6 +911,9 @@ controller:
 
   # -- Annotations for the application controller StatefulSet
   statefulsetAnnotations: {}
+
+  # -- Labels for the application controller StatefulSet
+  statefulsetLabels: {}
 
   # -- Annotations for the application controller Deployment
   deploymentAnnotations: {}
@@ -1189,7 +1198,7 @@ dex:
     # -- Dex image repository
     repository: ghcr.io/dexidp/dex
     # -- Dex image tag
-    tag: v2.44.0
+    tag: v2.45.1
     # -- Dex imagePullPolicy
     # @default -- `""` (defaults to global.image.imagePullPolicy)
     imagePullPolicy: ""
@@ -1308,6 +1317,7 @@ dex:
   # @default -- See [values.yaml]
   containerSecurityContext:
     runAsNonRoot: true
+    runAsUser: 1001
     readOnlyRootFilesystem: true
     allowPrivilegeEscalation: false
     seccompProfile:
@@ -1480,7 +1490,7 @@ redis:
       # -- Repository to use for the redis-exporter
       repository: ghcr.io/oliver006/redis_exporter
       # -- Tag to use for the redis-exporter
-      tag: v1.81.0
+      tag: v1.82.0
       # -- Image pull policy for the redis-exporter
       # @default -- `""` (defaults to global.image.imagePullPolicy)
       imagePullPolicy: ""
@@ -2328,7 +2338,7 @@ server:
     # -- Server service labels
     labels: {}
     # -- Server service type
-    type: LoadBalancer
+    type: ClusterIP
     # -- Server service http port for NodePort service type (only if `server.service.type` is set to "NodePort")
     nodePortHttp: 30080
     # -- Server service https port for NodePort service type (only if `server.service.type` is set to "NodePort")
